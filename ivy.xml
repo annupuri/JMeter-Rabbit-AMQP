@@ -5,17 +5,17 @@
     <conf name="runtime" extends="build" description="Libraries that need to be included with project jar" />
     </configurations>
     <dependencies>
-        <dependency org="org.apache.commons" name="commons-lang3" rev="3.0" conf="build->default"/>
-        <dependency org="commons-io" name="commons-io" rev="1.4" conf="build->default"/>
+        <dependency org="org.apache.commons" name="commons-lang3" rev="3.12.0" conf="build->default"/>
+        <dependency org="commons-io" name="commons-io" rev="2.11.0" conf="build->default"/>
         <dependency org="commons-jexl" name="commons-jexl" rev="1.1" conf="build->default"/>
-        <dependency org="commons-codec" name="commons-codec" rev="1.4" conf="build->default"/>
-        <dependency org="commons-collections" name="commons-collections" rev="3.2.1" conf="build->default"/>
+        <dependency org="commons-codec" name="commons-codec" rev="1.15" conf="build->default"/>
+        <dependency org="commons-collections" name="commons-collections" rev="3.2.2" conf="build->default"/>
         <dependency org="commons-httpclient" name="commons-httpclient" rev="3.1" conf="build->default"/>
-        <dependency org="commons-logging" name="commons-logging" rev="1.1.1" conf="build->default"/>
-        <dependency org="commons-net" name="commons-net" rev="1.4.1" conf="build->default"/>
-        <dependency org="org.apache.jmeter" name="jorphan" rev="2.6" conf="build->default"/>
-        <dependency org="avalon-logkit" name="avalon-logkit" rev="2.0" conf="build->default"/>
-        <dependency org="com.rabbitmq" name="amqp-client" rev="3.5.1" conf="build->default"/>
-        <dependency org="org.apache.jmeter" name="ApacheJMeter_core" rev="2.11" conf="build->default"/>
+        <dependency org="commons-logging" name="commons-logging" rev="1.2" conf="build->default"/>
+        <dependency org="commons-net" name="commons-net" rev="3.8.0" conf="build->default"/>
+        <dependency org="org.apache.jmeter" name="jorphan" rev="5.4.3" conf="build->default"/>
+        <dependency org="avalon-logkit" name="avalon-logkit" rev="2.1" conf="build->default"/>
+        <dependency org="com.rabbitmq" name="amqp-client" rev="5.14.2" conf="build->default"/>
+        <dependency org="org.apache.jmeter" name="ApacheJMeter_core" rev="5.4.3" conf="build->default"/>
     </dependencies>
 </ivy-module>
