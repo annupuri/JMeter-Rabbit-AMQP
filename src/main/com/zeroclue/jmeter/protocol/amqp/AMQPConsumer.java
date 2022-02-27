@@ -1,8 +1,11 @@
 package com.zeroclue.jmeter.protocol.amqp;
 
 import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Consumer;
 import com.rabbitmq.client.ConsumerCancelledException;
-import com.rabbitmq.client.QueueingConsumer;
+import com.rabbitmq.client.DefaultConsumer;
+import com.rabbitmq.client.Delivery;
+import com.rabbitmq.client.RpcServer;
 import com.rabbitmq.client.ShutdownSignalException;
 import org.apache.jmeter.samplers.Entry;
 import org.apache.jmeter.samplers.Interruptible;
@@ -14,6 +17,7 @@ import org.apache.log.Logger;
 import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.util.concurrent.TimeoutException;
 import java.util.Map;
 
 public class AMQPConsumer extends AMQPSampler implements Interruptible, TestStateListener {
@@ -41,7 +45,7 @@ public class AMQPConsumer extends AMQPSampler implements Interruptible, TestStat
     private final static String USE_TX = "AMQPConsumer.UseTx";
 
     private transient Channel channel;
-    private transient QueueingConsumer consumer;
+    private transient Consumer consumer;
     private transient String consumerTag;
 
     public AMQPConsumer(){
@@ -66,7 +70,7 @@ public class AMQPConsumer extends AMQPSampler implements Interruptible, TestStat
             // only do this once per thread. Otherwise it slows down the consumption by appx 50%
             if (consumer == null) {
                 log.info("Creating consumer");
-                consumer = new QueueingConsumer(channel);
+                consumer = new DefaultConsumer(channel);
             }
             if (consumerTag == null) {
                 log.info("Starting basic consumer");
@@ -86,10 +90,11 @@ public class AMQPConsumer extends AMQPSampler implements Interruptible, TestStat
         // aggregate samples.
         int loop = getIterationsAsInt();
         result.sampleStart(); // Start timing
-        QueueingConsumer.Delivery delivery = null;
+        Delivery delivery = null;
         try {
             for (int idx = 0; idx < loop; idx++) {
-                delivery = consumer.nextDelivery(getReceiveTimeoutAsInt());
+                // TODO: If you find a class that implements the nextDelivery method, uncomment it.
+                // delivery = consumer.nextDelivery(getReceiveTimeoutAsInt());
 
                 if(delivery == null){
                     result.setResponseMessage("timed out");
@@ -140,12 +145,12 @@ public class AMQPConsumer extends AMQPSampler implements Interruptible, TestStat
             result.setResponseCode("300");
             result.setResponseMessage(e.getMessage());
             interrupt();
-        } catch (InterruptedException e) {
-            consumer = null;
-            consumerTag = null;
-            log.info("interuppted while attempting to consume");
-            result.setResponseCode("200");
-            result.setResponseMessage(e.getMessage());
+        // } catch (InterruptedException e) {
+        //     consumer = null;
+        //     consumerTag = null;
+        //     log.info("interuppted while attempting to consume");
+        //     result.setResponseCode("200");
+        //     result.setResponseMessage(e.getMessage());
         } catch (IOException e) {
             consumer = null;
             consumerTag = null;
@@ -335,7 +340,7 @@ public class AMQPConsumer extends AMQPSampler implements Interruptible, TestStat
         log.debug(tn + " " + tl + " " + s + " " + th);
     }
 
-    protected boolean initChannel() throws IOException, NoSuchAlgorithmException, KeyManagementException {
+    protected boolean initChannel() throws IOException, NoSuchAlgorithmException, KeyManagementException, TimeoutException {
         boolean ret = super.initChannel();
         channel.basicQos(getPrefetchCountAsInt());
         if (getUseTx()) {
@@ -344,7 +349,7 @@ public class AMQPConsumer extends AMQPSampler implements Interruptible, TestStat
         return ret;
     }
 
-    private String formatHeaders(QueueingConsumer.Delivery delivery){
+    private String formatHeaders(Delivery delivery){
         Map<String, Object> headers = delivery.getProperties().getHeaders();
         StringBuilder sb = new StringBuilder();
         sb.append(TIMESTAMP_PARAMETER).append(": ")

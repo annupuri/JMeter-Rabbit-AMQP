@@ -12,6 +12,7 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.concurrent.TimeoutException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -66,7 +67,7 @@ public abstract class AMQPSampler extends AbstractSampler implements ThreadListe
         factory.setRequestedHeartbeat(DEFAULT_HEARTBEAT);
     }
 
-    protected boolean initChannel() throws IOException, NoSuchAlgorithmException, KeyManagementException {
+    protected boolean initChannel() throws IOException, NoSuchAlgorithmException, KeyManagementException, TimeoutException {
         Channel channel = getChannel();
 
         if(channel != null && !channel.isOpen()){
@@ -405,7 +406,7 @@ public abstract class AMQPSampler extends AbstractSampler implements ThreadListe
 
     }
 
-    protected Channel createChannel() throws IOException, NoSuchAlgorithmException, KeyManagementException {
+    protected Channel createChannel() throws IOException, NoSuchAlgorithmException, KeyManagementException, TimeoutException {
         log.info("Creating channel " + getVirtualHost()+":"+getPortAsInt());
 
          if (connection == null || !connection.isOpen()) {
@@ -444,7 +445,7 @@ public abstract class AMQPSampler extends AbstractSampler implements ThreadListe
         return channel;
     }
 
-    protected void deleteQueue() throws IOException, NoSuchAlgorithmException, KeyManagementException {
+    protected void deleteQueue() throws IOException, NoSuchAlgorithmException, KeyManagementException, TimeoutException {
         // use a different channel since channel closes on exception.
         Channel channel = createChannel();
         try {
@@ -462,7 +463,7 @@ public abstract class AMQPSampler extends AbstractSampler implements ThreadListe
         }
     }
 
-    protected void deleteExchange() throws IOException, NoSuchAlgorithmException, KeyManagementException {
+    protected void deleteExchange() throws IOException, NoSuchAlgorithmException, KeyManagementException, TimeoutException {
         // use a different channel since channel closes on exception.
         Channel channel = createChannel();
         try {
